@@ -1,0 +1,33 @@
+apiVersion: v1 # Kubernetes API version
+kind: Service # Kubernetes resource kind we are creating
+metadata: # Metadata of the resource kind we are creating
+  name: product-service
+spec:
+  selector:
+    app: product-service
+  ports:
+    - protocol: "TCP"
+      port: 9093 # The port that the service is running on in the cluster
+      targetPort: 9093 # The port exposed by the service
+  type: LoadBalancer # type of the service. LoadBalancer indicates that our service will be external.
+---
+apiVersion: apps/v1
+kind: Deployment # Kubernetes resource kind we are creating
+metadata:
+  name: product-service
+spec:
+  selector:
+    matchLabels:
+      app: product-service
+  replicas: 2 # Number of replicas that will be created for this deployment
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: product-service # Image that will be used inside the container in the cluster
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9093 # The port that the container is running on in the cluster
